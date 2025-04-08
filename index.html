@@ -38,6 +38,27 @@
       text-shadow: 0 0 10px #a020f0;
     }
 
+    .action-button {
+      padding: 15px 40px;
+      font-size: 22px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(145deg, #a020f0, #6a0dad);
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 0 15px #a020f0;
+      transition: all 0.3s ease;
+      margin-bottom: 20px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .action-button:hover {
+      background: #8b00ff;
+      box-shadow: 0 0 25px #a020f0;
+    }
+
     .discord-button img {
       width: 55px;
       height: 55px;
@@ -51,80 +72,52 @@
       box-shadow: 0 0 12px #7289da;
     }
 
-    /* New Discord Chat Button */
-    .chat-button {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      cursor: pointer;
-      border-radius: 50%;
-      background: #7289da;
-      box-shadow: 0 0 15px #a020f0;
+    .footer {
+      position: absolute;
+      bottom: 10px;
+      right: 15px;
+      font-size: 12px;
+      color: #999;
+      z-index: 2;
     }
 
-    .popup {
+    /* Chat Popup */
+    .chat-popup {
       position: fixed;
-      left: 50%;
-      transform: translateX(-50%) translateY(100%);
-      bottom: 0;
+      bottom: 70px;
+      right: 15px;
       width: 300px;
       background-color: #111;
       color: white;
       padding: 20px;
       border-radius: 12px;
-      text-align: left;
       box-shadow: 0 0 15px #a020f0;
       z-index: 10;
-      transition: transform 0.6s ease-in-out, opacity 0.6s ease-in-out;
-      opacity: 0;
+      display: none;
     }
 
-    .popup.show {
-      transform: translateX(-50%) translateY(-50%);
-      top: 50%;
-      opacity: 1;
-    }
-
-    .close-btn {
-      position: absolute;
-      top: 5px;
-      right: 10px;
-      color: #aaa;
-      font-size: 18px;
-      cursor: pointer;
-    }
-
-    .close-btn:hover {
-      color: white;
-    }
-
-    label {
-      display: block;
-      margin-top: 10px;
-    }
-
-    #messageInput {
+    .chat-popup textarea {
       width: 100%;
-      padding: 10px;
-      margin-top: 10px;
-      background-color: #333;
+      height: 100px;
+      background-color: #222;
       color: white;
       border: none;
-      border-radius: 5px;
+      border-radius: 8px;
+      padding: 10px;
     }
 
-    #sendMessageButton {
+    .chat-popup button {
+      width: 100%;
+      padding: 10px;
       background-color: #a020f0;
-      border: none;
-      padding: 10px;
       color: white;
-      cursor: pointer;
-      width: 100%;
+      border: none;
+      border-radius: 8px;
       margin-top: 10px;
-      border-radius: 5px;
+      cursor: pointer;
     }
 
-    #sendMessageButton:hover {
+    .chat-popup button:hover {
       background-color: #8b00ff;
     }
   </style>
@@ -137,52 +130,26 @@
     <button class="action-button" onclick="location.href='SolarMathMain.html'">Start SolarMath</button>
     <button class="action-button" onclick="togglePopup('patchNotesPopup')">Patch Notes</button>
     <button class="action-button" onclick="togglePopup('settingsPopup')">Settings</button><br/>
+    <button class="action-button" onclick="openChatPopup()">Chat</button> <!-- New Chat Button -->
     <div class="discord-button">
       <a href="https://discord.gg/mXXjsg8Vzv" target="_blank">
-        <img src="Discord.png" alt="Join Discord" title="Join our Discord!">
+        <img src="Discord.png" alt="Join Discord" title="Join our Discord Server!">
       </a>
     </div>
   </div>
 
-  <!-- New Discord Chat Button -->
-  <div class="chat-button" onclick="togglePopup('chatPopup')">
-    <img src="chat.png" alt="Chat">
-  </div>
-
   <!-- Chat Popup -->
-  <div id="chatPopup" class="popup">
-    <div class="close-btn" onclick="togglePopup('chatPopup')">✖</div>
+  <div id="chatPopup" class="chat-popup">
     <h3>Discord Chat</h3>
-    <label for="messageInput">Your Message:</label>
-    <textarea id="messageInput" rows="4" placeholder="Type your message..."></textarea>
-    <button id="sendMessageButton" onclick="sendMessageToDiscord()">Send</button>
-  </div>
-
-  <!-- Patch Notes Popup -->
-  <div id="patchNotesPopup" class="popup">
-    <div class="close-btn" onclick="togglePopup('patchNotesPopup')">✖</div>
-    <h3>Patch Notes</h3>
-    <ul>
-      <li>✅ Improved UI animations</li>
-      <li>🎨 Added customizable colors</li>
-      <li>🚀 Performance optimizations</li>
-    </ul>
-  </div>
-
-  <!-- Settings Popup -->
-  <div id="settingsPopup" class="popup">
-    <div class="close-btn" onclick="togglePopup('settingsPopup')">✖</div>
-    <h3>Settings</h3>
-    <label>Background Color:</label>
-    <input type="color" id="bgColorPicker" value="#000000" />
-    <label>Particle Color:</label>
-    <input type="color" id="particleColorPicker" value="#ffffff" />
+    <textarea id="chatMessage" placeholder="Type your message here..."></textarea>
+    <button onclick="sendMessage()">Send Message</button>
   </div>
 
   <div class="footer">
     Made by Solar — 2025
   </div>
 
+  <!-- Particles.js Library -->
   <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
 
   <script>
@@ -222,28 +189,6 @@
       popup.classList.toggle("show");
     }
 
-    function sendMessageToDiscord() {
-      const message = document.getElementById("messageInput").value;
-      if (message.trim()) {
-        fetch('https://discord.com/api/webhooks/1359256467705823363/7KCVyt1aFA5DhPxIQ9khBxJyLz_5RG4VC2N4aXfcEmt77IbVTKtB_dpZN_Ff_hO90g7j', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            content: message,
-            username: 'Website User'
-          })
-        })
-        .then(response => {
-          if (response.ok) {
-            alert("Message sent to Discord!");
-            document.getElementById("messageInput").value = '';
-          } else {
-            alert("Failed to send message.");
-          }
-        });
-      }
-    }
-
     document.getElementById("bgColorPicker").addEventListener("input", (e) => {
       document.body.style.backgroundColor = e.target.value;
     });
@@ -254,6 +199,38 @@
       particleConfig.particles.line_linked.color = color;
       particlesJS("particles-js", particleConfig);
     });
+
+    // Open chat popup
+    function openChatPopup() {
+      document.getElementById("chatPopup").style.display = "block";
+    }
+
+    // Function to send the message (via Webhook or Bot)
+    function sendMessage() {
+      const message = document.getElementById("chatMessage").value;
+      if (message.trim() === "") {
+        alert("Please type a message.");
+        return;
+      }
+
+      // Webhook URL (Replace with your actual webhook URL)
+      const webhookUrl = 'https://discord.com/api/webhooks/1359256467705823363/7KCVyt1aFA5DhPxIQ9khBxJyLz_5RG4VC2N4aXfcEmt77IbVTKtB_dpZN_Ff_hO90g7j';
+      const payload = JSON.stringify({
+        content: message
+      });
+
+      fetch(webhookUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: payload
+      })
+      .then(response => {
+        if (!response.ok) {
+          alert("Failed to send message.");
+        }
+        document.getElementById("chatMessage").value = ""; // Clear message
+      });
+    }
   </script>
 </body>
 </html>
