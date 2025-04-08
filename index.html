@@ -38,27 +38,6 @@
       text-shadow: 0 0 10px #a020f0;
     }
 
-    .action-button {
-      padding: 15px 40px;
-      font-size: 22px;
-      border: none;
-      border-radius: 10px;
-      background: linear-gradient(145deg, #a020f0, #6a0dad);
-      color: white;
-      cursor: pointer;
-      box-shadow: 0 0 15px #a020f0;
-      transition: all 0.3s ease;
-      margin-bottom: 20px;
-      display: block;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    .action-button:hover {
-      background: #8b00ff;
-      box-shadow: 0 0 25px #a020f0;
-    }
-
     .discord-button img {
       width: 55px;
       height: 55px;
@@ -72,16 +51,17 @@
       box-shadow: 0 0 12px #7289da;
     }
 
-    .footer {
-      position: absolute;
-      bottom: 10px;
-      right: 15px;
-      font-size: 12px;
-      color: #999;
-      z-index: 2;
+    /* New Discord Chat Button */
+    .chat-button {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      cursor: pointer;
+      border-radius: 50%;
+      background: #7289da;
+      box-shadow: 0 0 15px #a020f0;
     }
 
-    /* GUI popups */
     .popup {
       position: fixed;
       left: 50%;
@@ -118,9 +98,34 @@
       color: white;
     }
 
-    .popup label {
+    label {
       display: block;
       margin-top: 10px;
+    }
+
+    #messageInput {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      background-color: #333;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+
+    #sendMessageButton {
+      background-color: #a020f0;
+      border: none;
+      padding: 10px;
+      color: white;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 10px;
+      border-radius: 5px;
+    }
+
+    #sendMessageButton:hover {
+      background-color: #8b00ff;
     }
   </style>
 </head>
@@ -137,6 +142,20 @@
         <img src="Discord.png" alt="Join Discord" title="Join our Discord!">
       </a>
     </div>
+  </div>
+
+  <!-- New Discord Chat Button -->
+  <div class="chat-button" onclick="togglePopup('chatPopup')">
+    <img src="chat.png" alt="Chat">
+  </div>
+
+  <!-- Chat Popup -->
+  <div id="chatPopup" class="popup">
+    <div class="close-btn" onclick="togglePopup('chatPopup')">✖</div>
+    <h3>Discord Chat</h3>
+    <label for="messageInput">Your Message:</label>
+    <textarea id="messageInput" rows="4" placeholder="Type your message..."></textarea>
+    <button id="sendMessageButton" onclick="sendMessageToDiscord()">Send</button>
   </div>
 
   <!-- Patch Notes Popup -->
@@ -164,7 +183,6 @@
     Made by Solar — 2025
   </div>
 
-  <!-- Particles.js Library -->
   <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
 
   <script>
@@ -204,6 +222,28 @@
       popup.classList.toggle("show");
     }
 
+    function sendMessageToDiscord() {
+      const message = document.getElementById("messageInput").value;
+      if (message.trim()) {
+        fetch('https://discord.com/api/webhooks/1359256467705823363/7KCVyt1aFA5DhPxIQ9khBxJyLz_5RG4VC2N4aXfcEmt77IbVTKtB_dpZN_Ff_hO90g7j', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            content: message,
+            username: 'Website User'
+          })
+        })
+        .then(response => {
+          if (response.ok) {
+            alert("Message sent to Discord!");
+            document.getElementById("messageInput").value = '';
+          } else {
+            alert("Failed to send message.");
+          }
+        });
+      }
+    }
+
     document.getElementById("bgColorPicker").addEventListener("input", (e) => {
       document.body.style.backgroundColor = e.target.value;
     });
@@ -213,13 +253,6 @@
       particleConfig.particles.color.value = color;
       particleConfig.particles.line_linked.color = color;
       particlesJS("particles-js", particleConfig);
-    });
-
-    // Event listener for "=" key press
-    document.addEventListener('keydown', function(event) {
-      if (event.key === "=") {
-        window.location.href = "SolarMathOG.html";  // Open the SolarMathOG.html file
-      }
     });
   </script>
 </body>
