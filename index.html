@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Google</title>
+  <title>SolarMath</title>
   <style>
     html, body {
       margin: 0;
@@ -59,6 +59,84 @@
       box-shadow: 0 0 25px #a020f0;
     }
 
+    .footer {
+      position: absolute;
+      bottom: 10px;
+      left: 15px;
+      font-size: 12px;
+      color: #999;
+      z-index: 2;
+    }
+
+    .gui-window {
+      position: fixed;
+      top: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 400px;
+      max-height: 80%;
+      overflow-y: auto;
+      background-color: #111;
+      border-radius: 12px;
+      box-shadow: 0 0 20px #a020f0;
+      color: white;
+      padding: 20px;
+      z-index: 9999;
+      display: none;
+    }
+
+    .gui-window h2 {
+      text-align: center;
+      color: #a020f0;
+      margin-top: 0;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 8px;
+      right: 12px;
+      font-size: 20px;
+      cursor: pointer;
+      color: #aaa;
+    }
+
+    .close-btn:hover {
+      color: white;
+    }
+
+    .setting-group {
+      margin-bottom: 20px;
+    }
+
+    .setting-group label {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .setting-group input[type="color"] {
+      width: 100%;
+      height: 40px;
+      border: none;
+      border-radius: 8px;
+    }
+
+    .patch-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .patch-item {
+      background-color: #222;
+      border-left: 5px solid #a020f0;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+    }
+
+    .discord-button {
+      margin-top: 15px;
+    }
+
     .discord-button img {
       width: 55px;
       height: 55px;
@@ -71,76 +149,6 @@
       transform: scale(1.15);
       box-shadow: 0 0 12px #7289da;
     }
-
-.footer {
-  position: absolute;
-  bottom: 10px;
-  left: 15px; /* Changed from right to left */
-  font-size: 12px;
-  color: #999;
-  z-index: 2;
-}
-
-    /* Chat Button as Image */
-    .chat-button {
-      position: fixed;
-      bottom: 15px;
-      right: 15px;
-      width: 55px;
-      height: 55px;
-      cursor: pointer;
-      z-index: 10;
-    }
-
-    /* Chat Popup */
-    .chat-popup {
-      position: fixed;
-      bottom: 70px;
-      right: 15px;
-      width: 300px;
-      background-color: #111;
-      color: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 0 15px #a020f0;
-      z-index: 10;
-      display: none;
-    }
-
-    .chat-popup textarea {
-      width: 100%;
-      height: 100px;
-      background-color: #222;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      padding: 10px;
-    }
-
-    .chat-popup button {
-      width: 100%;
-      padding: 10px;
-      background-color: #a020f0;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      margin-top: 10px;
-      cursor: pointer;
-    }
-
-    .chat-popup button:hover {
-      background-color: #8b00ff;
-    }
-
-    /* Close button for chat popup */
-    .close-chat {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      font-size: 20px;
-      color: white;
-      cursor: pointer;
-    }
   </style>
 </head>
 <body>
@@ -149,8 +157,9 @@
   <div class="center-content">
     <h1>Welcome to SolarMath</h1>
     <button class="action-button" onclick="location.href='SolarMathMain.html'">Start SolarMath</button>
-    <button class="action-button" onclick="togglePopup('patchNotesPopup')">Patch Notes</button>
-    <button class="action-button" onclick="togglePopup('settingsPopup')">Settings</button><br/>
+    <button class="action-button" onclick="toggleWindow('patchNotesWindow')">Patch Notes</button>
+    <button class="action-button" onclick="toggleWindow('settingsWindow')">Settings</button>
+
     <div class="discord-button">
       <a href="https://discord.gg/mXXjsg8Vzv" target="_blank">
         <img src="Discord.png" alt="Join Discord" title="Join our Discord Server!">
@@ -158,42 +167,59 @@
     </div>
   </div>
 
-  <!-- Chat Popup -->
-  <div id="chatPopup" class="chat-popup">
-    <span class="close-chat" onclick="toggleChatPopup()">X</span>
-    <h3>Discord Chat</h3>
-    <textarea id="chatMessage" placeholder="Type your message here..."></textarea>
-    <button onclick="sendMessage()">Send Message</button>
-  </div>
-
   <div class="footer">
     Made by Solar — 2025
   </div>
 
-  <!-- Chat Button Image -->
-  <img src="chat.png" class="chat-button" alt="Chat" onclick="toggleChatPopup()"/>
+  <!-- Patch Notes GUI -->
+  <div id="patchNotesWindow" class="gui-window">
+    <span class="close-btn" onclick="toggleWindow('patchNotesWindow')">X</span>
+    <h2>Patch Notes</h2>
+    <ul class="patch-list">
+      <li class="patch-item">
+        <strong>v1.0.0</strong><br>
+        - Initial release of SolarMath<br>
+        - Basic gameplay and interface added
+      </li>
+      <li class="patch-item">
+        <strong>v1.1.0</strong><br>
+        - Settings GUI added<br>
+        - Patch Notes GUI added<br>
+        - UI enhancements
+      </li>
+    </ul>
+  </div>
+
+  <!-- Settings GUI -->
+  <div id="settingsWindow" class="gui-window">
+    <span class="close-btn" onclick="toggleWindow('settingsWindow')">X</span>
+    <h2>Settings</h2>
+
+    <div class="setting-group">
+      <label for="bgColor">Background Color:</label>
+      <input type="color" id="bgColor" value="#000000" onchange="changeBackgroundColor(this.value)">
+    </div>
+
+    <div class="setting-group">
+      <label for="particleColor">Particle Color:</label>
+      <input type="color" id="particleColor" value="#ffffff" onchange="changeParticleColor(this.value)">
+    </div>
+
+    <p style="font-size: 12px; color: #888;">More settings coming soon.</p>
+  </div>
 
   <!-- Particles.js Library -->
   <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-
   <script>
-    let particleConfig = {
+    let particlesConfig = {
       "particles": {
         "number": { "value": 80, "density": { "enable": true, "value_area": 800 }},
         "color": { "value": "#ffffff" },
-        "shape": { "type": "circle", "stroke": { "width": 0 }, "polygon": { "nb_sides": 5 }},
+        "shape": { "type": "circle" },
         "opacity": { "value": 0.5 },
         "size": { "value": 3, "random": true },
         "line_linked": { "enable": true, "distance": 150, "color": "#ffffff", "opacity": 0.4, "width": 1 },
-        "move": {
-          "enable": true,
-          "speed": 6,
-          "direction": "none",
-          "random": false,
-          "straight": false,
-          "out_mode": "out",
-          "bounce": false
-        }
+        "move": { "enable": true, "speed": 6 }
       },
       "interactivity": {
         "detect_on": "canvas",
@@ -206,48 +232,21 @@
       "retina_detect": true
     };
 
-    particlesJS("particles-js", particleConfig);
+    particlesJS("particles-js", particlesConfig);
 
-    function togglePopup(id) {
-      const popup = document.getElementById(id);
-      popup.classList.toggle("show");
+    function toggleWindow(id) {
+      const win = document.getElementById(id);
+      win.style.display = win.style.display === "block" ? "none" : "block";
     }
 
-    // Toggle chat popup visibility
-    function toggleChatPopup() {
-      const chatPopup = document.getElementById("chatPopup");
-      if (chatPopup.style.display === "block") {
-        chatPopup.style.display = "none";
-      } else {
-        chatPopup.style.display = "block";
-      }
+    function changeBackgroundColor(color) {
+      document.body.style.backgroundColor = color;
     }
 
-    // Function to send the message (via Webhook or Bot)
-    function sendMessage() {
-      const message = document.getElementById("chatMessage").value;
-      if (message.trim() === "") {
-        alert("Please type a message.");
-        return;
-      }
-
-      // Webhook URL (Replace with your actual webhook URL)
-      const webhookUrl = 'https://discord.com/api/webhooks/1359256467705823363/7KCVyt1aFA5DhPxIQ9khBxJyLz_5RG4VC2N4aXfcEmt77IbVTKtB_dpZN_Ff_hO90g7j';
-      const payload = JSON.stringify({
-        content: message
-      });
-
-      fetch(webhookUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: payload
-      })
-      .then(response => {
-        if (!response.ok) {
-          alert("Failed to send message.");
-        }
-        document.getElementById("chatMessage").value = ""; // Clear message
-      });
+    function changeParticleColor(color) {
+      particlesConfig.particles.color.value = color;
+      particlesConfig.particles.line_linked.color = color;
+      particlesJS("particles-js", particlesConfig); // reinitialize
     }
   </script>
 </body>
