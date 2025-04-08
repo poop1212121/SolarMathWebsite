@@ -38,7 +38,7 @@
       text-shadow: 0 0 10px #a020f0;
     }
 
-    .start-button {
+    .action-button {
       padding: 15px 40px;
       font-size: 22px;
       border: none;
@@ -48,10 +48,13 @@
       cursor: pointer;
       box-shadow: 0 0 15px #a020f0;
       transition: all 0.3s ease;
-      margin-bottom: 25px;
+      margin-bottom: 20px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
     }
 
-    .start-button:hover {
+    .action-button:hover {
       background: #8b00ff;
       box-shadow: 0 0 25px #a020f0;
     }
@@ -77,6 +80,48 @@
       color: #999;
       z-index: 2;
     }
+
+    /* GUI popups */
+    .popup {
+      position: fixed;
+      left: 50%;
+      transform: translateX(-50%) translateY(100%);
+      bottom: 0;
+      width: 300px;
+      background-color: #111;
+      color: white;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: left;
+      box-shadow: 0 0 15px #a020f0;
+      z-index: 10;
+      transition: transform 0.6s ease-in-out, opacity 0.6s ease-in-out;
+      opacity: 0;
+    }
+
+    .popup.show {
+      transform: translateX(-50%) translateY(-50%);
+      top: 50%;
+      opacity: 1;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 5px;
+      right: 10px;
+      color: #aaa;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .close-btn:hover {
+      color: white;
+    }
+
+    .popup label {
+      display: block;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
@@ -84,12 +129,35 @@
 
   <div class="center-content">
     <h1>Welcome to SolarMath</h1>
-    <button class="start-button" onclick="location.href='SolarMathMain.html'">Start SolarMath</button><br/>
+    <button class="action-button" onclick="location.href='SolarMathMain.html'">Start SolarMath</button>
+    <button class="action-button" onclick="togglePopup('patchNotesPopup')">Patch Notes</button>
+    <button class="action-button" onclick="togglePopup('settingsPopup')">Settings</button><br/>
     <div class="discord-button">
       <a href="https://discord.gg/mXXjsg8Vzv" target="_blank">
         <img src="Discord.png" alt="Join Discord" title="Join our Discord!">
       </a>
     </div>
+  </div>
+
+  <!-- Patch Notes Popup -->
+  <div id="patchNotesPopup" class="popup">
+    <div class="close-btn" onclick="togglePopup('patchNotesPopup')">✖</div>
+    <h3>Patch Notes</h3>
+    <ul>
+      <li>✅ Improved UI animations</li>
+      <li>🎨 Added customizable colors</li>
+      <li>🚀 Performance optimizations</li>
+    </ul>
+  </div>
+
+  <!-- Settings Popup -->
+  <div id="settingsPopup" class="popup">
+    <div class="close-btn" onclick="togglePopup('settingsPopup')">✖</div>
+    <h3>Settings</h3>
+    <label>Background Color:</label>
+    <input type="color" id="bgColorPicker" value="#000000" />
+    <label>Particle Color:</label>
+    <input type="color" id="particleColorPicker" value="#ffffff" />
   </div>
 
   <div class="footer">
@@ -99,16 +167,15 @@
   <!-- Particles.js Library -->
   <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
 
-  <!-- Particles.js Config -->
   <script>
-    particlesJS("particles-js", {
+    let particleConfig = {
       "particles": {
         "number": { "value": 80, "density": { "enable": true, "value_area": 800 }},
-        "color": { "value": "#FFFFFF" },
+        "color": { "value": "#ffffff" },
         "shape": { "type": "circle", "stroke": { "width": 0 }, "polygon": { "nb_sides": 5 }},
         "opacity": { "value": 0.5 },
         "size": { "value": 3, "random": true },
-        "line_linked": { "enable": true, "distance": 150, "color": "#FFFFFF", "opacity": 0.4, "width": 1 },
+        "line_linked": { "enable": true, "distance": 150, "color": "#ffffff", "opacity": 0.4, "width": 1 },
         "move": {
           "enable": true,
           "speed": 6,
@@ -128,6 +195,24 @@
         }
       },
       "retina_detect": true
+    };
+
+    particlesJS("particles-js", particleConfig);
+
+    function togglePopup(id) {
+      const popup = document.getElementById(id);
+      popup.classList.toggle("show");
+    }
+
+    document.getElementById("bgColorPicker").addEventListener("input", (e) => {
+      document.body.style.backgroundColor = e.target.value;
+    });
+
+    document.getElementById("particleColorPicker").addEventListener("input", (e) => {
+      const color = e.target.value;
+      particleConfig.particles.color.value = color;
+      particleConfig.particles.line_linked.color = color;
+      particlesJS("particles-js", particleConfig);
     });
   </script>
 </body>
