@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Google</title>
+  <link rel="shortcut icon" href="images/google.ico" type="image/x-icon">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: url('images/background.png') no-repeat center center fixed;
+      background-size: 160%;
+      color: #fff;
+      text-align: center;
+    }
+    .container {
+      padding: 20px;
+      background-color: rgba(0, 0, 0, 0.6);
+      min-height: 100vh;
+    }
+    h1 {
+      color: #9b59b6;
+    }
+button {
+  padding: 15px 30px;
+  margin: 10px;
+  font-size: 16px;
+  background: #003366; /* Dark blue */
+  border: none;
+  color: #fff;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #001f4d; /* Even darker blue for hover effect */
+}
+    .game {
+      display: none;
+    }
+    .upgrade {
+      margin-top: 10px;
+    }
+    .clicker-image, .miner-image {
+      width: 100px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+  <p id="playTime">Play Time: 0s</p>
+    <h1>Solar Games</h1>
+    <div id="menu">
+<button onclick="showGame('clicker')">Play Gem Clicker</button>
+<button onclick="showGame('simulator')">Play Miner Inc</button>
+<button onclick="showGame('cookie')">Play Cookie Craze</button>
+<button onclick="showGame('alien')">Play Alien Tycoon</button>
+<button onclick="showGame('farm')">Play Pixel Farm</button>
+<button onclick="showGame('robot')">Play Robot Factory</button>
+<button onclick="showGame('burger')">Play Burger Empire</button>
+<button onclick="showGame('potion')">Play Potion Lab</button>
+<button onclick="showGame('space-mining')">Play Space Mining</button>
+<button onclick="showGame('dungeon')">Play Dungeon Exploration</button>
+    </div>
+	
+<div id="adminPanel" style="display: none; position: absolute; top: 20px; left: 20px; background-color: rgba(0, 0, 0, 0.8); color: white; padding: 10px;">
+  <h2>Admin Panel</h2>
+  <button onclick="resetGameProgress()">Reset Game Progress</button>
+  <br><br>
+  <h3>Give Currency to Game</h3>
+  <select id="gameSelect">
+    <option value="gemClicker">Gem Clicker</option>
+    <option value="potionBrew">Potion Brew</option>
+    <option value="dungeonFight">Dungeon Fight</option>
+    <option value="burgerGrill">Burger Grill</option>
+    <option value="robotCollect">Robot Collect</option>
+    <option value="farmHarvest">Farm Harvest</option>
+    <option value="minerSimulator">Miner Simulator</option>
+    <option value="cookieCraze">Cookie Craze</option>
+    <option value="spaceMining">Space Mining</option>
+    <option value="alienTycoon">Alien Tycoon</option>
+  </select>
+  <input type="number" id="currencyAmount" placeholder="Amount" />
+  <button onclick="giveCurrency(document.getElementById('gameSelect').value, document.getElementById('currencyAmount').value)">Give Currency</button>
+  <br><br>
+  <button onclick="window.open('https://discord.gg/N4PeWT42YC', '_blank')">Join Discord</button>
+</div>
+
+<div id="potion" class="game">
+  <h2>Potion Lab 🧪</h2>
+  <p>Potions: <span id="potions">0</span></p>
+  <img src="images/potion.png" alt="Potion" class="clicker-image" onclick="brewPotion()" width="1000" height="150">
+  <div class="upgrade">
+    <button onclick="upgradeCauldron()">Upgrade Cauldron (Cost: <span id="cauldronCost">30</span>)</button>
+    <button onclick="hireAlchemist()">Hire Alchemist (Cost: <span id="alchemistCost">180</span>)</button>
+  </div>
+  <br><br>
+  <button onclick="goBack()">🔙 Back</button>
+</div>
+
+<div id="dungeon" class="game">
+  <h2>Dungeon Exploration ⚔️</h2>
+  <p>Gold: 💰<span id="gold">0</span></p>
+  <img src="images/monster.png" alt="Monster" class="clicker-image" onclick="fightMonster()" width="1000" height="150">
+  <div class="upgrade">
+    <button onclick="buySword()">Buy Sword (Cost: <span id="swordCost">40</span>)</button>
+    <button onclick="buyShield()">Buy Shield (Cost: <span id="shieldCost">100</span>)</button>
+  </div>
+  <br><br>
+  <button onclick="goBack()">🔙 Back</button>
+</div>
+
+    <!-- Clicker Game -->
+    <div id="clicker" class="game">
+      <h2>Gem Clicker 💎</h2>
+      <p>Gems: <span id="gems">0</span></p>
+      <img src="images/gem.png" alt="Gem" class="clicker-image" onclick="mineGem()" width="1000" height="150">
+      <div class="upgrade">
+        <button onclick="buyGemUpgrade()">Upgrade Click (Cost: <span id="gemUpgradeCost">10</span>)</button>
+        <button onclick="buyGemAutoClicker()">Buy Auto Clicker (Cost: <span id="autoClickerCost">100</span>)</button>
+      </div>
+      <br><br>
+      <button onclick="goBack()">🔙 Back</button>
+    </div>
+
+    <!-- Simulator Game -->
+    <div id="simulator" class="game">
+      <h2>Miner Inc ⛏️</h2>
+      <p>Money: $<span id="money">0</span></p>
+      <p>Miners: <span id="miners">0</span></p>
+      <img src="images/miner.png" alt="Miner" class="miner-image" width="1000" height="150">
+      <div>
+        <button onclick="hireMiner()">Hire Miner ($<span id="minerCost">20</span>)</button>
+      </div>
+      <div class="upgrade">
+        <button onclick="buyMinerUpgrade()">Upgrade Miner Power ($<span id="minerUpgradeCost">50</span>)</button>
+      </div>
+      <br><br>
+      <button onclick="goBack()">🔙 Back</button>
+    </div>
+
+<div id="space-mining" class="game">
+  <h2>Space Mining 🚀</h2>
+  <p>Ore: <span id="ore">0</span></p>
+  <img src="images/asteroid.png" alt="Asteroid" class="clicker-image" onclick="mineOre()" width="1000" height="150">
+  <div class="upgrade">
+    <button onclick="buyLaser()">Upgrade Laser (Cost: <span id="laserCost">50</span>)</button>
+    <button onclick="hirePilot()">Hire Pilot (Cost: <span id="pilotCost">200</span>)</button>
+  </div>
+  <br><br>
+  <button onclick="goBack()">🔙 Back</button>
+</div>
+
+<div id="robot" class="game">
+  <h2>Robot Factory 🤖</h2>
+  <p>Parts: <span id="parts">0</span></p>
+  <img src="images/robot.png" alt="Robot Part" class="clicker-image" onclick="collectPart()" width="1000" height="150">
+  <div class="upgrade">
+    <button onclick="upgradeTool()">Upgrade Tool (Cost: <span id="toolCost">25</span>)</button>
+    <button onclick="hireEngineer()">Hire Engineer (Cost: <span id="engineerCost">200</span>)</button>
+  </div>
+  <br><br>
+  <button onclick="goBack()">🔙 Back</button>
+</div>
+
+<div id="farm" class="game">
+  <h2>Pixel Farm 🌾</h2>
+  <p>Wheat: <span id="wheat">0</span></p>
+  <img src="images/farm.png" alt="Wheat Field" class="clicker-image" onclick="harvestWheat()" width="1000" height="150">
+  <div class="upgrade">
+    <button onclick="buyTractor()">Buy Tractor (Cost: <span id="tractorCost">20</span>)</button>
+    <button onclick="buyAutoFarmer()">Hire Auto Farmer (Cost: <span id="farmerCost">150</span>)</button>
+  </div>
+  <br><br>
+  <button onclick="goBack()">🔙 Back</button>
+</div>
+
+<div id="burger" class="game">
+  <h2>Burger Empire 🍔</h2>
+  <p>Burgers: <span id="burgers">0</span></p>
+  <img src="images/Burger.png" alt="Burger" class="clicker-image" onclick="grillBurger()" width="1000" height="150">
+  <div class="upgrade">
+    <button onclick="buyGrill()">Buy Grill (Cost: <span id="grillCost">25</span>)</button>
+    <button onclick="hireChef()">Hire Chef (Cost: <span id="chefCost">150</span>)</button>
+  </div>
+  <br><br>
+  <button onclick="goBack()">🔙 Back</button>
+</div>
+
+    <!-- Cookie Craze Game -->
+    <div id="cookie" class="game">
+      <h2>Cookie Craze 🍪</h2>
+      <p>Cookies: <span id="cookies">0</span></p>
+      <img src="images/cookie.png" alt="Cookie" class="clicker-image" onclick="bakeCookie()" width="1000" height="150">
+      <div class="upgrade">
+        <button onclick="buyCookieUpgrade()">Upgrade Click (Cost: <span id="cookieUpgradeCost">15</span>)</button>
+        <button onclick="buyBaker()">Hire Baker (Cost: <span id="bakerCost">100</span>)</button>
+      </div>
+      <br><br>
+      <button onclick="goBack()">🔙 Back</button>
+    </div>
+
+    <!-- Alien Tycoon Game -->
+    <div id="alien" class="game">
+      <h2>Alien Tycoon 👽</h2>
+      <p>Energy: ⚡<span id="energy">0</span></p>
+      <p>Aliens: <span id="aliens">0</span></p>
+      <img src="images/alien.png" alt="Alien Worker" class="miner-image" width="1000" height="150">
+      <div>
+        <button onclick="hireAlien()">Hire Alien (⚡<span id="alienCost">30</span>)</button>
+        <button onclick="upgradeSpaceship()">Upgrade Spaceship (⚡<span id="spaceshipUpgradeCost">80</span>)</button>
+      </div>
+      <br><br>
+      <button onclick="goBack()">🔙 Back</button>
+    </div>
+
+  </div>
+
+  <script>
+    function showGame(game) {
+      document.getElementById('menu').style.display = 'none';
+      document.querySelectorAll('.game').forEach(g => g.style.display = 'none');
+      document.getElementById(game).style.display = 'block';
+    }
+
+    function goBack() {
+      document.getElementById('menu').style.display = 'block';
+      document.querySelectorAll('.game').forEach(g => g.style.display = 'none');
+      saveGame();
+    }
+
+    // Gem Clicker Game
+    let gems = +localStorage.getItem('gems') || 0;
+    let gemsPerClick = +localStorage.getItem('gemsPerClick') || 1;
+    let gemUpgradeCost = +localStorage.getItem('gemUpgradeCost') || 10;
+    let autoClickers = +localStorage.getItem('autoClickers') || 0;
+    let autoClickerCost = +localStorage.getItem('autoClickerCost') || 100;
+
+    function mineGem() {
+      gems += gemsPerClick;
+      updateClickerUI();
+    }
+
+    function buyGemUpgrade() {
+      if (gems >= gemUpgradeCost) {
+        gems -= gemUpgradeCost;
+        gemsPerClick++;
+        gemUpgradeCost = Math.floor(gemUpgradeCost * 1.5);
+        updateClickerUI();
+      }
+    }
+
+    function buyGemAutoClicker() {
+      if (gems >= autoClickerCost) {
+        gems -= autoClickerCost;
+        autoClickers++;
+        autoClickerCost = Math.floor(autoClickerCost * 1.75);
+        updateClickerUI();
+      }
+    }
+
+    setInterval(() => {
+      gems += autoClickers;
+      updateClickerUI();
+    }, 1000);
+
+    function updateClickerUI() {
+      document.getElementById('gems').textContent = gems;
+      document.getElementById('gemUpgradeCost').textContent = gemUpgradeCost;
+      document.getElementById('autoClickerCost').textContent = autoClickerCost;
+    }
+
+let potions = +localStorage.getItem('potions') || 0;
+let cauldronPower = +localStorage.getItem('cauldronPower') || 1;
+let cauldronCost = +localStorage.getItem('cauldronCost') || 30;
+let alchemists = +localStorage.getItem('alchemists') || 0;
+let alchemistCost = +localStorage.getItem('alchemistCost') || 180;
+
+function brewPotion() {
+  potions += cauldronPower;
+  updatePotionUI();
+}
+
+function upgradeCauldron() {
+  if (potions >= cauldronCost) {
+    potions -= cauldronCost;
+    cauldronPower++;
+    cauldronCost = Math.floor(cauldronCost * 1.5);
+    updatePotionUI();
+  }
+}
+
+function hireAlchemist() {
+  if (potions >= alchemistCost) {
+    potions -= alchemistCost;
+    alchemists++;
+    alchemistCost = Math.floor(alchemistCost * 1.8);
+    updatePotionUI();
+  }
+}
+
+function updatePotionUI() {
+  document.getElementById('potions').textContent = potions;
+  document.getElementById('cauldronCost').textContent = cauldronCost;
+  document.getElementById('alchemistCost').textContent = alchemistCost;
+}
+
+setInterval(() => {
+  potions += alchemists;
+  updatePotionUI();
+}, 1000);
+
+  let gold = +localStorage.getItem('gold') || 0;
+  let swordPower = +localStorage.getItem('swordPower') || 1;
+  let swordCost = +localStorage.getItem('swordCost') || 40;
+  let shieldPower = +localStorage.getItem('shieldPower') || 1;
+  let shieldCost = +localStorage.getItem('shieldCost') || 100;
+
+  function fightMonster() {
+    gold += swordPower * shieldPower;
+    updateDungeonUI();
+  }
+
+  function buySword() {
+    if (gold >= swordCost) {
+      gold -= swordCost;
+      swordPower++;
+      swordCost = Math.floor(swordCost * 1.6);
+      updateDungeonUI();
+    }
+  }
+
+  function buyShield() {
+    if (gold >= shieldCost) {
+      gold -= shieldCost;
+      shieldPower++;
+      shieldCost = Math.floor(shieldCost * 1.7);
+      updateDungeonUI();
+    }
+  }
+
+  function updateDungeonUI() {
+    document.getElementById('gold').textContent = gold;
+    document.getElementById('swordCost').textContent = swordCost;
+    document.getElementById('shieldCost').textContent = shieldCost;
+  }
+
+let burgers = +localStorage.getItem('burgers') || 0;
+let grillPower = +localStorage.getItem('grillPower') || 1;
+let grillCost = +localStorage.getItem('grillCost') || 25;
+let chefs = +localStorage.getItem('chefs') || 0;
+let chefCost = +localStorage.getItem('chefCost') || 150;
+
+function grillBurger() {
+  burgers += grillPower;
+  updateBurgerUI();
+}
+
+function buyGrill() {
+  if (burgers >= grillCost) {
+    burgers -= grillCost;
+    grillPower++;
+    grillCost = Math.floor(grillCost * 1.5);
+    updateBurgerUI();
+  }
+}
+
+function hireChef() {
+  if (burgers >= chefCost) {
+    burgers -= chefCost;
+    chefs++;
+    chefCost = Math.floor(chefCost * 1.8);
+    updateBurgerUI();
+  }
+}
+
+function updateBurgerUI() {
+  document.getElementById('burgers').textContent = burgers;
+  document.getElementById('grillCost').textContent = grillCost;
+  document.getElementById('chefCost').textContent = chefCost;
+}
+
+setInterval(() => {
+  burgers += chefs;
+  updateBurgerUI();
+}, 1000);
+
+let playSeconds = +localStorage.getItem('playSeconds') || 0;
+
+function updatePlayTime() {
+  playSeconds++;
+  localStorage.setItem('playSeconds', playSeconds);
+  
+  const hours = Math.floor(playSeconds / 3600);
+  const minutes = Math.floor((playSeconds % 3600) / 60);
+  const seconds = playSeconds % 60;
+  
+  document.getElementById('playTime').textContent = 
+    `Play Time: ${hours > 0 ? hours + 'h ' : ''}${minutes > 0 ? minutes + 'm ' : ''}${seconds}s`;
+}
+
+setInterval(updatePlayTime, 1000);
+
+
+let parts = +localStorage.getItem('parts') || 0;
+let toolPower = +localStorage.getItem('toolPower') || 1;
+let toolCost = +localStorage.getItem('toolCost') || 25;
+let engineers = +localStorage.getItem('engineers') || 0;
+let engineerCost = +localStorage.getItem('engineerCost') || 200;
+
+function collectPart() {
+  parts += toolPower;
+  updateRobotUI();
+}
+
+function upgradeTool() {
+  if (parts >= toolCost) {
+    parts -= toolCost;
+    toolPower++;
+    toolCost = Math.floor(toolCost * 1.5);
+    updateRobotUI();
+  }
+}
+
+function hireEngineer() {
+  if (parts >= engineerCost) {
+    parts -= engineerCost;
+    engineers++;
+    engineerCost = Math.floor(engineerCost * 1.8);
+    updateRobotUI();
+  }
+}
+
+function updateRobotUI() {
+  document.getElementById('parts').textContent = parts;
+  document.getElementById('toolCost').textContent = toolCost;
+  document.getElementById('engineerCost').textContent = engineerCost;
+}
+
+setInterval(() => {
+  parts += engineers;
+  updateRobotUI();
+}, 1000);
+
+let wheat = +localStorage.getItem('wheat') || 0;
+let tractorPower = +localStorage.getItem('tractorPower') || 1;
+let tractorCost = +localStorage.getItem('tractorCost') || 20;
+let autoFarmers = +localStorage.getItem('autoFarmers') || 0;
+let farmerCost = +localStorage.getItem('farmerCost') || 150;
+
+function harvestWheat() {
+  wheat += tractorPower;
+  updateFarmUI();
+}
+
+function buyTractor() {
+  if (wheat >= tractorCost) {
+    wheat -= tractorCost;
+    tractorPower++;
+    tractorCost = Math.floor(tractorCost * 1.6);
+    updateFarmUI();
+  }
+}
+
+function buyAutoFarmer() {
+  if (wheat >= farmerCost) {
+    wheat -= farmerCost;
+    autoFarmers++;
+    farmerCost = Math.floor(farmerCost * 1.7);
+    updateFarmUI();
+  }
+}
+
+function updateFarmUI() {
+  document.getElementById('wheat').textContent = wheat;
+  document.getElementById('tractorCost').textContent = tractorCost;
+  document.getElementById('farmerCost').textContent = farmerCost;
+}
+
+setInterval(() => {
+  wheat += autoFarmers;
+  updateFarmUI();
+}, 1000);
+
+    // Miner Simulator
+    let money = +localStorage.getItem('money') || 0;
+    let miners = +localStorage.getItem('miners') || 1; 
+    let minerPower = +localStorage.getItem('minerPower') || 1;
+    let minerCost = +localStorage.getItem('minerCost') || 20;
+    let minerUpgradeCost = +localStorage.getItem('minerUpgradeCost') || 50;
+
+    function hireMiner() {
+      if (money >= minerCost) {
+        money -= minerCost;
+        miners++;
+        minerCost = Math.floor(minerCost * 1.5);
+        updateSimulatorUI();
+      }
+    }
+
+    function buyMinerUpgrade() {
+      if (money >= minerUpgradeCost) {
+        money -= minerUpgradeCost;
+        minerPower++;
+        minerUpgradeCost = Math.floor(minerUpgradeCost * 2);
+        updateSimulatorUI();
+      }
+    }
+
+    function updateSimulatorUI() {
+      document.getElementById('money').textContent = Math.floor(money);
+      document.getElementById('miners').textContent = miners;
+      document.getElementById('minerCost').textContent = minerCost;
+      document.getElementById('minerUpgradeCost').textContent = minerUpgradeCost;
+    }
+
+    setInterval(() => {
+      money += miners * minerPower;
+      updateSimulatorUI();
+    }, 1000);
+
+    // Cookie Craze Game
+    let cookies = +localStorage.getItem('cookies') || 1;
+    let cookiesPerClick = +localStorage.getItem('cookiesPerClick') || 1;
+    let cookieUpgradeCost = +localStorage.getItem('cookieUpgradeCost') || 15;
+    let bakers = +localStorage.getItem('bakers') || 0;
+    let bakerCost = +localStorage.getItem('bakerCost') || 100;
+
+    function bakeCookie() {
+      cookies += cookiesPerClick;
+      updateCookieUI();
+    }
+
+    function buyCookieUpgrade() {
+      if (cookies >= cookieUpgradeCost) {
+        cookies -= cookieUpgradeCost;
+        cookiesPerClick++;
+        cookieUpgradeCost = Math.floor(cookieUpgradeCost * 1.6);
+        updateCookieUI();
+      }
+    }
+
+    function buyBaker() {
+      if (cookies >= bakerCost) {
+        cookies -= bakerCost;
+        bakers++;
+        bakerCost = Math.floor(bakerCost * 1.7);
+        updateCookieUI();
+      }
+    }
+
+    function updateCookieUI() {
+      document.getElementById('cookies').textContent = cookies;
+      document.getElementById('cookieUpgradeCost').textContent = cookieUpgradeCost;
+      document.getElementById('bakerCost').textContent = bakerCost;
+    }
+
+    setInterval(() => {
+      cookies += bakers;
+      updateCookieUI();
+    }, 1000);
+
+  let ore = +localStorage.getItem('ore') || 0;
+  let laserPower = +localStorage.getItem('laserPower') || 1;
+  let laserCost = +localStorage.getItem('laserCost') || 50;
+  let pilots = +localStorage.getItem('pilots') || 0;
+  let pilotCost = +localStorage.getItem('pilotCost') || 200;
+
+  function mineOre() {
+    ore += laserPower;
+    updateSpaceMiningUI();
+  }
+
+  function buyLaser() {
+    if (ore >= laserCost) {
+      ore -= laserCost;
+      laserPower++;
+      laserCost = Math.floor(laserCost * 1.5);
+      updateSpaceMiningUI();
+    }
+  }
+
+  function hirePilot() {
+    if (ore >= pilotCost) {
+      ore -= pilotCost;
+      pilots++;
+      pilotCost = Math.floor(pilotCost * 1.8);
+      updateSpaceMiningUI();
+    }
+  }
+
+  function updateSpaceMiningUI() {
+    document.getElementById('ore').textContent = ore;
+    document.getElementById('laserCost').textContent = laserCost;
+    document.getElementById('pilotCost').textContent = pilotCost;
+  }
+
+  setInterval(() => {
+    ore += pilots;
+    updateSpaceMiningUI();
+  }, 1000);
+
+
+  let adminPanelVisible = false;
+
+  // Toggle Admin Panel
+  function toggleAdminPanel() {
+    adminPanelVisible = !adminPanelVisible;
+    const adminPanel = document.getElementById('adminPanel');
+    adminPanel.style.display = adminPanelVisible ? 'block' : 'none';
+  }
+
+  // Reset all games' progress
+  function resetGameProgress() {
+    localStorage.clear();
+    alert("Game progress has been reset!");
+    location.reload();  // Reload the page to apply changes
+  }
+
+  // Give a specific amount of currency in any game
+  function giveCurrency(game, amount) {
+    switch (game) {
+      case 'gemClicker':
+        localStorage.setItem('gems', amount);
+        break;
+      case 'potionBrew':
+        localStorage.setItem('potions', amount);
+        break;
+      case 'dungeonFight':
+        localStorage.setItem('gold', amount);
+        break;
+      case 'burgerGrill':
+        localStorage.setItem('burgers', amount);
+        break;
+      case 'robotCollect':
+        localStorage.setItem('parts', amount);
+        break;
+      case 'farmHarvest':
+        localStorage.setItem('wheat', amount);
+        break;
+      case 'minerSimulator':
+        localStorage.setItem('money', amount);
+        break;
+      case 'cookieCraze':
+        localStorage.setItem('cookies', amount);
+        break;
+      case 'spaceMining':
+        localStorage.setItem('ore', amount);
+        break;
+      case 'alienTycoon':
+        localStorage.setItem('energy', amount);
+        break;
+      default:
+        alert('Unknown game.');
+        return;
+    }
+    alert(`${game} currency has been set to ${amount}`);
+  }
+
+  // Listen for the "0" and "9" keys to toggle the admin panel visibility
+  document.addEventListener('keydown', function(event) {
+    if (event.key === '0') {
+      toggleAdminPanel();
+    }
+    if (event.key === '9') {
+      toggleAdminPanel();
+    }
+  });
+
+    // Alien Tycoon
+    let energy = +localStorage.getItem('energy') || 0;
+    let aliens = +localStorage.getItem('aliens') || 1;
+    let alienCost = +localStorage.getItem('alienCost') || 30;
+    let spaceshipUpgradeCost = +localStorage.getItem('spaceshipUpgradeCost') || 80;
+
+    function hireAlien() {
+      if (energy >= alienCost) {
+        energy -= alienCost;
+        aliens++;
+        alienCost = Math.floor(alienCost * 1.5);
+        updateAlienUI();
+      }
+    }
+
+    function upgradeSpaceship() {
+      if (energy >= spaceshipUpgradeCost) {
+        energy -= spaceshipUpgradeCost;
+        spaceshipUpgradeCost = Math.floor(spaceshipUpgradeCost * 2);
+        updateAlienUI();
+      }
+    }
+
+    function updateAlienUI() {
+      document.getElementById('energy').textContent = energy;
+      document.getElementById('aliens').textContent = aliens;
+      document.getElementById('alienCost').textContent = alienCost;
+      document.getElementById('spaceshipUpgradeCost').textContent = spaceshipUpgradeCost;
+    }
+
+    setInterval(() => {
+      energy += aliens;
+      updateAlienUI();
+    }, 1000);
+
+    function saveGame() {
+      // Save all game data to localStorage
+      localStorage.setItem('gems', gems);
+      localStorage.setItem('gemsPerClick', gemsPerClick);
+      localStorage.setItem('gemUpgradeCost', gemUpgradeCost);
+      localStorage.setItem('autoClickers', autoClickers);
+      localStorage.setItem('autoClickerCost', autoClickerCost);
+      localStorage.setItem('money', money);
+      localStorage.setItem('miners', miners);
+      localStorage.setItem('minerPower', minerPower);
+      localStorage.setItem('minerCost', minerCost);
+      localStorage.setItem('minerUpgradeCost', minerUpgradeCost);
+      localStorage.setItem('cookies', cookies);
+      localStorage.setItem('cookiesPerClick', cookiesPerClick);
+      localStorage.setItem('cookieUpgradeCost', cookieUpgradeCost);
+      localStorage.setItem('bakers', bakers);
+      localStorage.setItem('bakerCost', bakerCost);
+      localStorage.setItem('energy', energy);
+      localStorage.setItem('aliens', aliens);
+      localStorage.setItem('alienCost', alienCost);
+      localStorage.setItem('spaceshipUpgradeCost', spaceshipUpgradeCost);
+	  localStorage.setItem('wheat', wheat);
+	  localStorage.setItem('tractorPower', tractorPower);
+	  localStorage.setItem('tractorCost', tractorCost);
+	  localStorage.setItem('autoFarmers', autoFarmers);
+	  localStorage.setItem('farmerCost', farmerCost);
+	    // Saving Space Mining Game Data
+  localStorage.setItem('ore', ore);
+  localStorage.setItem('laserPower', laserPower);
+  localStorage.setItem('laserCost', laserCost);
+  localStorage.setItem('pilots', pilots);
+  localStorage.setItem('pilotCost', pilotCost);
+
+  // Saving Dungeon Exploration Game Data
+  localStorage.setItem('gold', gold);
+  localStorage.setItem('swordPower', swordPower);
+  localStorage.setItem('swordCost', swordCost);
+  localStorage.setItem('shieldPower', shieldPower);
+  localStorage.setItem('shieldCost', shieldCost);
+
+  // Saving Farm Simulator Game Data
+  localStorage.setItem('crops', crops);
+  localStorage.setItem('tractorPower', tractorPower);
+  localStorage.setItem('tractorCost', tractorCost);
+  localStorage.setItem('workers', workers);
+  localStorage.setItem('workerCost', workerCost);
+}
+
+    window.onbeforeunload = saveGame;
+  </script>
+</body>
+</html>
