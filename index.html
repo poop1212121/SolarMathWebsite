@@ -81,6 +81,17 @@
       z-index: 2;
     }
 
+    /* Chat Button as Image */
+    .chat-button {
+      position: fixed;
+      bottom: 15px;
+      right: 15px;
+      width: 55px;
+      height: 55px;
+      cursor: pointer;
+      z-index: 10;
+    }
+
     /* Chat Popup */
     .chat-popup {
       position: fixed;
@@ -120,6 +131,16 @@
     .chat-popup button:hover {
       background-color: #8b00ff;
     }
+
+    /* Close button for chat popup */
+    .close-chat {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 20px;
+      color: white;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -130,7 +151,6 @@
     <button class="action-button" onclick="location.href='SolarMathMain.html'">Start SolarMath</button>
     <button class="action-button" onclick="togglePopup('patchNotesPopup')">Patch Notes</button>
     <button class="action-button" onclick="togglePopup('settingsPopup')">Settings</button><br/>
-    <button class="action-button" onclick="openChatPopup()">Chat</button> <!-- New Chat Button -->
     <div class="discord-button">
       <a href="https://discord.gg/mXXjsg8Vzv" target="_blank">
         <img src="Discord.png" alt="Join Discord" title="Join our Discord Server!">
@@ -140,6 +160,7 @@
 
   <!-- Chat Popup -->
   <div id="chatPopup" class="chat-popup">
+    <span class="close-chat" onclick="toggleChatPopup()">X</span>
     <h3>Discord Chat</h3>
     <textarea id="chatMessage" placeholder="Type your message here..."></textarea>
     <button onclick="sendMessage()">Send Message</button>
@@ -148,6 +169,9 @@
   <div class="footer">
     Made by Solar — 2025
   </div>
+
+  <!-- Chat Button Image -->
+  <img src="chat.png" class="chat-button" alt="Chat" onclick="toggleChatPopup()"/>
 
   <!-- Particles.js Library -->
   <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
@@ -189,20 +213,14 @@
       popup.classList.toggle("show");
     }
 
-    document.getElementById("bgColorPicker").addEventListener("input", (e) => {
-      document.body.style.backgroundColor = e.target.value;
-    });
-
-    document.getElementById("particleColorPicker").addEventListener("input", (e) => {
-      const color = e.target.value;
-      particleConfig.particles.color.value = color;
-      particleConfig.particles.line_linked.color = color;
-      particlesJS("particles-js", particleConfig);
-    });
-
-    // Open chat popup
-    function openChatPopup() {
-      document.getElementById("chatPopup").style.display = "block";
+    // Toggle chat popup visibility
+    function toggleChatPopup() {
+      const chatPopup = document.getElementById("chatPopup");
+      if (chatPopup.style.display === "block") {
+        chatPopup.style.display = "none";
+      } else {
+        chatPopup.style.display = "block";
+      }
     }
 
     // Function to send the message (via Webhook or Bot)
