@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>SolarMath Start</title>
+  <title>Google</title>
   <style>
     html, body {
       margin: 0;
@@ -21,35 +21,79 @@
       z-index: 1;
     }
 
-    .center-button {
+    .center-content {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
+      text-align: center;
       z-index: 2;
+      color: white;
     }
 
-    .center-button button {
-      padding: 15px 30px;
-      font-size: 20px;
+    h1 {
+      font-size: 48px;
+      color: #a020f0;
+      margin-bottom: 30px;
+      text-shadow: 0 0 10px #a020f0;
+    }
+
+    .start-button {
+      padding: 15px 40px;
+      font-size: 22px;
       border: none;
-      border-radius: 8px;
-      background-color: #a020f0;
+      border-radius: 10px;
+      background: linear-gradient(145deg, #a020f0, #6a0dad);
       color: white;
       cursor: pointer;
-      transition: background 0.3s;
+      box-shadow: 0 0 15px #a020f0;
+      transition: all 0.3s ease;
+      margin-bottom: 25px;
     }
 
-    .center-button button:hover {
-      background-color: #7b1fa2;
+    .start-button:hover {
+      background: #8b00ff;
+      box-shadow: 0 0 25px #a020f0;
+    }
+
+    .discord-button img {
+      width: 55px;
+      height: 55px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      border-radius: 50%;
+    }
+
+    .discord-button img:hover {
+      transform: scale(1.15);
+      box-shadow: 0 0 12px #7289da;
+    }
+
+    .footer {
+      position: absolute;
+      bottom: 10px;
+      right: 15px;
+      font-size: 12px;
+      color: #999;
+      z-index: 2;
     }
   </style>
 </head>
 <body>
   <div id="particles-js"></div>
 
-  <div class="center-button">
-    <button onclick="location.href='SolarMathMain.html'">Open SolarMath</button>
+  <div class="center-content">
+    <h1>Welcome to SolarMath</h1>
+    <button class="start-button" onclick="location.href='SolarMathMain.html'">Start SolarMath</button><br/>
+    <div class="discord-button">
+      <a href="https://discord.gg/mXXjsg8Vzv" target="_blank">
+        <img src="Discord.png" alt="Join Discord" title="Join our Discord!">
+      </a>
+    </div>
+  </div>
+
+  <div class="footer">
+    Made by Solar — 2025
   </div>
 
   <!-- Particles.js Library -->
@@ -59,41 +103,12 @@
   <script>
     particlesJS("particles-js", {
       "particles": {
-        "number": {
-          "value": 80,
-          "density": {
-            "enable": true,
-            "value_area": 800
-          }
-        },
-        "color": {
-          "value": "#FFFFFF"
-        },
-        "shape": {
-          "type": "circle",
-          "stroke": {
-            "width": 0,
-            "color": "#000000"
-          },
-          "polygon": {
-            "nb_sides": 5
-          }
-        },
-        "opacity": {
-          "value": 0.5,
-          "random": false
-        },
-        "size": {
-          "value": 3,
-          "random": true
-        },
-        "line_linked": {
-          "enable": true,
-          "distance": 150,
-          "color": "#FFFFFF",
-          "opacity": 0.4,
-          "width": 1
-        },
+        "number": { "value": 80, "density": { "enable": true, "value_area": 800 }},
+        "color": { "value": "#FFFFFF" },
+        "shape": { "type": "circle", "stroke": { "width": 0 }, "polygon": { "nb_sides": 5 }},
+        "opacity": { "value": 0.5 },
+        "size": { "value": 3, "random": true },
+        "line_linked": { "enable": true, "distance": 150, "color": "#FFFFFF", "opacity": 0.4, "width": 1 },
         "move": {
           "enable": true,
           "speed": 6,
