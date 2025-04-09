@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Google</title>
+  <title>Home</title>
   <style>
     html, body {
       margin: 0;
@@ -188,12 +188,25 @@
       display: flex;
       justify-content: space-between;
     }
+
+    #usernameChangeText {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      color: #a020f0;
+      font-size: 18px;
+      display: none;
+    }
   </style>
 </head>
 <body>
   <audio id="bgMusic" loop>
     <source src="DidITellYouThatIMissYou.mp3" type="audio/mpeg">
   </audio>
+
+  <div class="chat-button" onclick="toggleChatPopup()">
+    <img src="chat-chat.png" alt="Chat Button" />
+  </div>
 
   <div id="particles-js"></div>
 
@@ -219,7 +232,7 @@
 
   <div id="settingsPopup" class="popup">
     <h2>Settings</h2>
-    <label><input type="checkbox" id="songToggle"> Play Song</label><br>
+    <label><input type="checkbox" id="songToggle" onclick="toggleSong()"> Play Song</label><br>
     <label><input type="checkbox" id="darkModeToggle" checked disabled> Dark Mode (always on)</label><br><br>
     <label>Background Color: <input type="color" id="bgColorPicker" value="#000000"></label><br><br>
     <label>Particle Color: <input type="color" id="particleColorPicker" value="#a020f0"></label><br><br>
@@ -248,85 +261,15 @@
     <span class="close-chat" onclick="toggleChatPopup()">X</span>
     <h3>Discord Chat</h3>
     <textarea id="chatMessage" placeholder="Type your message here..."></textarea>
-    <button onclick="sendMessage()">Send Message</button>
+    <button onclick="sendMessage()">Send Message</button><br><br>
+    <label>Webhook Username: <input type="text" id="webhookUsername" placeholder="Enter username" /></label><br><br>
+    <button onclick="changeWebhookUsername()">Change Username</button>
   </div>
 
-  <div class="footer">
-    Made by Solar — 2025
-  </div>
+  <div id="usernameChangeText">Changed discord webhook username successfully to [name]</div>
 
-  <img src="Chat.png" class="chat-button" alt="Chat" onclick="toggleChatPopup()" />
-
-  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
   <script>
-    let music = document.getElementById("bgMusic");
-
-    function togglePopup(id) {
-      const popup = document.getElementById(id);
-      popup.style.display = (popup.style.display === "block") ? "none" : "block";
-    }
-
-    function toggleChatPopup() {
-      const chatPopup = document.getElementById("chatPopup");
-      chatPopup.style.display = (chatPopup.style.display === "block") ? "none" : "block";
-    }
-
-    function sendMessage() {
-      const message = document.getElementById("chatMessage").value;
-      if (message.trim() === "") {
-        alert("Please type a message.");
-        return;
-      }
-
-      const webhookUrl = 'https://discord.com/api/webhooks/1359256467705823363/7KCVyt1aFA5DhPxIQ9khBxJyLz_5RG4VC2N4aXfcEmt77IbVTKtB_dpZN_Ff_hO90g7j';
-      const payload = JSON.stringify({ content: message });
-
-      fetch(webhookUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: payload
-      })
-      .then(response => {
-        if (!response.ok) alert("Failed to send message.");
-        document.getElementById("chatMessage").value = "";
-      });
-    }
-
-    document.getElementById("songToggle").addEventListener("change", function() {
-      if (this.checked) music.play();
-      else music.pause();
-    });
-
-    document.getElementById("volumeSlider").addEventListener("input", function() {
-      const volume = this.value;
-      music.volume = volume;
-      document.getElementById("volumePercentage").textContent = Math.round(volume * 100) + "%";
-      document.getElementById("volumeInput").value = Math.round(volume * 100);
-    });
-
-    document.getElementById("volumeInput").addEventListener("input", function() {
-      const volume = this.value / 100;
-      music.volume = volume;
-      document.getElementById("volumeSlider").value = volume;
-      document.getElementById("volumePercentage").textContent = this.value + "%";
-    });
-
-    document.getElementById("timeSlider").addEventListener("input", function() {
-      const time = this.value;
-      const minutes = Math.floor(time / 60);
-      const seconds = time % 60;
-      document.getElementById("timeLeftDisplay").textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-      document.getElementById("timeInput").value = time;
-    });
-
-    document.getElementById("timeInput").addEventListener("input", function() {
-      const time = this.value;
-      document.getElementById("timeSlider").value = time;
-      const minutes = Math.floor(time / 60);
-      const seconds = time % 60;
-      document.getElementById("timeLeftDisplay").textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-    });
-
     particlesJS('particles-js', {
       particles: {
         number: {
@@ -381,6 +324,122 @@
       }
     });
 
+    function toggleChatPopup() {
+      const chatPopup = document.getElementById("chatPopup");
+      chatPopup.style.display = chatPopup.style.display === "block" ? "none" : "block";
+    }
+
+function sendMessage() {
+  const message = document.getElementById("chatMessage").value;
+  const webhookURL = 'https://discord.com/api/webhooks/1359256467705823363/7KCVyt1aFA5DhPxIQ9khBxJyLz_5RG4VC2N4aXfcEmt77IbVTKtB_dpZN_Ff_hO90g7j'; // Replace with your actual Discord Webhook URL
+  const username = document.getElementById("webhookUsername").value || "Anonymous"; // Default username if not entered
+
+  // Prepare the payload for the webhook
+  const payload = {
+    content: message,
+    username: username
+  };
+
+  // Send the message to Discord using fetch API
+  fetch(webhookURL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  })
+  .then(response => {
+    if (response.ok) {
+      console.log("Message sent successfully!");
+      document.getElementById("chatMessage").value = ''; // Clear the message input field
+    } else {
+      console.error("Error sending message:", response.statusText);
+    }
+  })
+  .catch(error => {
+    console.error("Error sending message:", error);
+  });
+}
+
+    function changeWebhookUsername() {
+      const username = document.getElementById("webhookUsername").value;
+      const usernameChangeText = document.getElementById("usernameChangeText");
+      usernameChangeText.textContent = `Changed discord webhook username successfully to ${username}`;
+      usernameChangeText.style.display = 'block';
+      setTimeout(() => {
+        usernameChangeText.style.display = 'none';
+      }, 3000);
+    }
+
+    let popupVisible = false;
+
+    function togglePopup(popupId) {
+      const popup = document.getElementById(popupId);
+      popup.style.display = popupVisible ? 'none' : 'block';
+      popupVisible = !popupVisible;
+    }
+
+    function toggleSong() {
+      const bgMusic = document.getElementById("bgMusic");
+      if (document.getElementById("songToggle").checked) {
+        bgMusic.play();
+      } else {
+        bgMusic.pause();
+      }
+    }
+
+    function applyColorSettings() {
+      const bgColor = document.getElementById("bgColorPicker").value;
+      const particleColor = document.getElementById("particleColorPicker").value;
+      document.body.style.backgroundColor = bgColor;
+      particlesJS('particles-js', {
+        particles: {
+          color: {
+            value: particleColor
+          }
+        }
+      });
+    }
+    
+    // Volume Slider
+    const volumeSlider = document.getElementById('volumeSlider');
+    const volumeInput = document.getElementById('volumeInput');
+    const volumePercentage = document.getElementById('volumePercentage');
+
+    volumeSlider.addEventListener('input', function() {
+      const volume = volumeSlider.value;
+      volumeInput.value = (volume * 100).toFixed(0);
+      volumePercentage.textContent = `${(volume * 100).toFixed(0)}%`;
+      document.getElementById("bgMusic").volume = volume;
+    });
+
+    volumeInput.addEventListener('input', function() {
+      const volume = volumeInput.value / 100;
+      volumeSlider.value = volume;
+      volumePercentage.textContent = `${volumeInput.value}%`;
+      document.getElementById("bgMusic").volume = volume;
+    });
+    
+    // Time Slider
+    const timeSlider = document.getElementById('timeSlider');
+    const timeInput = document.getElementById('timeInput');
+    const timeLeftDisplay = document.getElementById('timeLeftDisplay');
+
+    timeSlider.addEventListener('input', function() {
+      const time = timeSlider.value;
+      const minutes = Math.floor(time / 60);
+      const seconds = time % 60;
+      timeLeftDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+      timeInput.value = time;
+    });
+
+    timeInput.addEventListener('input', function() {
+      const time = timeInput.value;
+      timeSlider.value = time;
+      const minutes = Math.floor(time / 60);
+      const seconds = time % 60;
+      timeLeftDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    });
   </script>
 </body>
 </html>
