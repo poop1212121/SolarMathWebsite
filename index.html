@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>SolarMath</title>
+  <title>Google</title>
   <style>
     html, body {
       margin: 0;
@@ -11,7 +11,9 @@
       height: 100%;
       font-family: 'Trebuchet MS', Arial, sans-serif;
       background-color: #000;
+      color: white;
       overflow: hidden;
+      transition: background-color 0.3s, color 0.3s;
     }
 
     #particles-js {
@@ -59,84 +61,6 @@
       box-shadow: 0 0 25px #a020f0;
     }
 
-    .footer {
-      position: absolute;
-      bottom: 10px;
-      left: 15px;
-      font-size: 12px;
-      color: #999;
-      z-index: 2;
-    }
-
-    .gui-window {
-      position: fixed;
-      top: 10%;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 400px;
-      max-height: 80%;
-      overflow-y: auto;
-      background-color: #111;
-      border-radius: 12px;
-      box-shadow: 0 0 20px #a020f0;
-      color: white;
-      padding: 20px;
-      z-index: 9999;
-      display: none;
-    }
-
-    .gui-window h2 {
-      text-align: center;
-      color: #a020f0;
-      margin-top: 0;
-    }
-
-    .close-btn {
-      position: absolute;
-      top: 8px;
-      right: 12px;
-      font-size: 20px;
-      cursor: pointer;
-      color: #aaa;
-    }
-
-    .close-btn:hover {
-      color: white;
-    }
-
-    .setting-group {
-      margin-bottom: 20px;
-    }
-
-    .setting-group label {
-      display: block;
-      margin-bottom: 8px;
-    }
-
-    .setting-group input[type="color"] {
-      width: 100%;
-      height: 40px;
-      border: none;
-      border-radius: 8px;
-    }
-
-    .patch-list {
-      list-style: none;
-      padding: 0;
-    }
-
-    .patch-item {
-      background-color: #222;
-      border-left: 5px solid #a020f0;
-      padding: 10px;
-      margin-bottom: 10px;
-      border-radius: 6px;
-    }
-
-    .discord-button {
-      margin-top: 15px;
-    }
-
     .discord-button img {
       width: 55px;
       height: 55px;
@@ -149,17 +73,137 @@
       transform: scale(1.15);
       box-shadow: 0 0 12px #7289da;
     }
+
+    .footer {
+      position: absolute;
+      bottom: 10px;
+      left: 15px;
+      font-size: 12px;
+      color: #999;
+      z-index: 2;
+    }
+
+    .chat-button {
+      position: fixed;
+      bottom: 15px;
+      right: 15px;
+      width: 55px;
+      height: 55px;
+      cursor: pointer;
+      z-index: 10;
+    }
+
+    .chat-popup {
+      position: fixed;
+      bottom: 70px;
+      right: 15px;
+      width: 300px;
+      background-color: #111;
+      color: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px #a020f0;
+      z-index: 10;
+      display: none;
+    }
+
+    .chat-popup textarea {
+      width: 100%;
+      height: 100px;
+      background-color: #222;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px;
+    }
+
+    .chat-popup button {
+      width: 100%;
+      padding: 10px;
+      background-color: #a020f0;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+
+    .chat-popup button:hover {
+      background-color: #8b00ff;
+    }
+
+    .close-chat {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 20px;
+      color: white;
+      cursor: pointer;
+    }
+
+    .popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #111;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px #a020f0;
+      color: white;
+      z-index: 10;
+      width: 400px;
+      text-align: left;
+    }
+
+    .popup h2 {
+      color: #a020f0;
+    }
+
+    .popup button {
+      background-color: #a020f0;
+      border: none;
+      padding: 10px;
+      border-radius: 8px;
+      color: white;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+
+    .popup button:hover {
+      background-color: #8b00ff;
+    }
+
+    .popup input[type="color"] {
+      margin-left: 10px;
+    }
+
+    .volume-slider, .time-slider {
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .slider-label {
+      display: flex;
+      justify-content: space-between;
+    }
   </style>
 </head>
 <body>
+  <audio id="bgMusic" loop>
+    <source src="DidITellYouThatIMissYou.mp3" type="audio/mpeg">
+  </audio>
+
   <div id="particles-js"></div>
 
   <div class="center-content">
     <h1>Welcome to SolarMath</h1>
-    <button class="action-button" onclick="location.href='SolarMathMain.html'">Start SolarMath</button>
-    <button class="action-button" onclick="toggleWindow('patchNotesWindow')">Patch Notes</button>
-    <button class="action-button" onclick="toggleWindow('settingsWindow')">Settings</button>
-
+    <button class="action-button" onclick="location.href='SolarMathMain.html'">Start</button>
+    <button class="action-button" onclick="togglePopup('settingsPopup')">Settings</button>
+    <button class="action-button" onclick="togglePopup('patchNotesPopup')">Patch Notes</button>
+    <button class="action-button" onclick="window.close()">Exit</button>
+    <br/>
     <div class="discord-button">
       <a href="https://discord.gg/mXXjsg8Vzv" target="_blank">
         <img src="Discord.png" alt="Join Discord" title="Join our Discord Server!">
@@ -167,87 +211,176 @@
     </div>
   </div>
 
+  <div id="patchNotesPopup" class="popup">
+    <h2>Patch Notes</h2>
+    <p>• Patch notes now open manually.<br>• Buttons reordered and improved.<br>• Discord & chat buttons added.</p>
+    <button onclick="togglePopup('patchNotesPopup')">Close</button>
+  </div>
+
+  <div id="settingsPopup" class="popup">
+    <h2>Settings</h2>
+    <label><input type="checkbox" id="songToggle"> Play Song</label><br>
+    <label><input type="checkbox" id="darkModeToggle" checked disabled> Dark Mode (always on)</label><br><br>
+    <label>Background Color: <input type="color" id="bgColorPicker" value="#000000"></label><br><br>
+    <label>Particle Color: <input type="color" id="particleColorPicker" value="#a020f0"></label><br><br>
+    
+    <!-- Volume Control -->
+    <label for="volumeSlider">Volume: </label>
+    <div class="slider-label">
+      <span id="volumePercentage">100%</span>
+      <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1" step="0.1" value="1"><br>
+      <input type="number" id="volumeInput" value="100" min="0" max="100" step="1">
+    </div><br>
+    
+    <!-- Time Control -->
+    <label for="timeSlider">Time: </label>
+    <div class="slider-label">
+      <span id="timeLeftDisplay">2:17</span>
+      <input type="range" class="time-slider" id="timeSlider" min="0" max="137" step="1" value="137"><br>
+      <input type="number" id="timeInput" value="137" min="0" max="137" step="1">
+    </div><br>
+    
+    <button onclick="applyColorSettings()">Select Colour</button><br><br>
+    <button onclick="togglePopup('settingsPopup')">Close</button>
+  </div>
+
+  <div id="chatPopup" class="chat-popup">
+    <span class="close-chat" onclick="toggleChatPopup()">X</span>
+    <h3>Discord Chat</h3>
+    <textarea id="chatMessage" placeholder="Type your message here..."></textarea>
+    <button onclick="sendMessage()">Send Message</button>
+  </div>
+
   <div class="footer">
     Made by Solar — 2025
   </div>
 
-  <!-- Patch Notes GUI -->
-  <div id="patchNotesWindow" class="gui-window">
-    <span class="close-btn" onclick="toggleWindow('patchNotesWindow')">X</span>
-    <h2>Patch Notes</h2>
-    <ul class="patch-list">
-      <li class="patch-item">
-        <strong>v1.0.0</strong><br>
-        - Initial release of SolarMath<br>
-        - Basic gameplay and interface added
-      </li>
-      <li class="patch-item">
-        <strong>v1.1.0</strong><br>
-        - Settings GUI added<br>
-        - Patch Notes GUI added<br>
-        - UI enhancements
-      </li>
-    </ul>
-  </div>
+  <img src="Chat.png" class="chat-button" alt="Chat" onclick="toggleChatPopup()" />
 
-  <!-- Settings GUI -->
-  <div id="settingsWindow" class="gui-window">
-    <span class="close-btn" onclick="toggleWindow('settingsWindow')">X</span>
-    <h2>Settings</h2>
-
-    <div class="setting-group">
-      <label for="bgColor">Background Color:</label>
-      <input type="color" id="bgColor" value="#000000" onchange="changeBackgroundColor(this.value)">
-    </div>
-
-    <div class="setting-group">
-      <label for="particleColor">Particle Color:</label>
-      <input type="color" id="particleColor" value="#ffffff" onchange="changeParticleColor(this.value)">
-    </div>
-
-    <p style="font-size: 12px; color: #888;">More settings coming soon.</p>
-  </div>
-
-  <!-- Particles.js Library -->
   <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
   <script>
-    let particlesConfig = {
-      "particles": {
-        "number": { "value": 80, "density": { "enable": true, "value_area": 800 }},
-        "color": { "value": "#ffffff" },
-        "shape": { "type": "circle" },
-        "opacity": { "value": 0.5 },
-        "size": { "value": 3, "random": true },
-        "line_linked": { "enable": true, "distance": 150, "color": "#ffffff", "opacity": 0.4, "width": 1 },
-        "move": { "enable": true, "speed": 6 }
-      },
-      "interactivity": {
-        "detect_on": "canvas",
-        "events": {
-          "onhover": { "enable": false },
-          "onclick": { "enable": false },
-          "resize": true
+    let music = document.getElementById("bgMusic");
+
+    function togglePopup(id) {
+      const popup = document.getElementById(id);
+      popup.style.display = (popup.style.display === "block") ? "none" : "block";
+    }
+
+    function toggleChatPopup() {
+      const chatPopup = document.getElementById("chatPopup");
+      chatPopup.style.display = (chatPopup.style.display === "block") ? "none" : "block";
+    }
+
+    function sendMessage() {
+      const message = document.getElementById("chatMessage").value;
+      if (message.trim() === "") {
+        alert("Please type a message.");
+        return;
+      }
+
+      const webhookUrl = 'https://discord.com/api/webhooks/1359256467705823363/7KCVyt1aFA5DhPxIQ9khBxJyLz_5RG4VC2N4aXfcEmt77IbVTKtB_dpZN_Ff_hO90g7j';
+      const payload = JSON.stringify({ content: message });
+
+      fetch(webhookUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: payload
+      })
+      .then(response => {
+        if (!response.ok) alert("Failed to send message.");
+        document.getElementById("chatMessage").value = "";
+      });
+    }
+
+    document.getElementById("songToggle").addEventListener("change", function() {
+      if (this.checked) music.play();
+      else music.pause();
+    });
+
+    document.getElementById("volumeSlider").addEventListener("input", function() {
+      const volume = this.value;
+      music.volume = volume;
+      document.getElementById("volumePercentage").textContent = Math.round(volume * 100) + "%";
+      document.getElementById("volumeInput").value = Math.round(volume * 100);
+    });
+
+    document.getElementById("volumeInput").addEventListener("input", function() {
+      const volume = this.value / 100;
+      music.volume = volume;
+      document.getElementById("volumeSlider").value = volume;
+      document.getElementById("volumePercentage").textContent = this.value + "%";
+    });
+
+    document.getElementById("timeSlider").addEventListener("input", function() {
+      const time = this.value;
+      const minutes = Math.floor(time / 60);
+      const seconds = time % 60;
+      document.getElementById("timeLeftDisplay").textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+      document.getElementById("timeInput").value = time;
+    });
+
+    document.getElementById("timeInput").addEventListener("input", function() {
+      const time = this.value;
+      document.getElementById("timeSlider").value = time;
+      const minutes = Math.floor(time / 60);
+      const seconds = time % 60;
+      document.getElementById("timeLeftDisplay").textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    });
+
+    particlesJS('particles-js', {
+      particles: {
+        number: {
+          value: 200,
+          density: {
+            enable: true,
+            value_area: 800
+          }
+        },
+        color: {
+          value: "#a020f0"
+        },
+        shape: {
+          type: "circle"
+        },
+        opacity: {
+          value: 0.5,
+          random: true,
+          anim: {
+            enable: true,
+            speed: 1,
+            opacity_min: 0.1,
+            sync: false
+          }
+        },
+        size: {
+          value: 3,
+          random: true,
+          anim: {
+            enable: false,
+            speed: 40,
+            size_min: 0.1,
+            sync: false
+          }
+        },
+        line_linked: {
+          enable: true,
+          distance: 150,
+          color: "#a020f0",
+          opacity: 0.4,
+          width: 1
+        },
+        move: {
+          enable: true,
+          speed: 4,
+          direction: "none",
+          random: true,
+          straight: false,
+          out_mode: "out",
+          bounce: false
         }
-      },
-      "retina_detect": true
-    };
+      }
+    });
 
-    particlesJS("particles-js", particlesConfig);
-
-    function toggleWindow(id) {
-      const win = document.getElementById(id);
-      win.style.display = win.style.display === "block" ? "none" : "block";
-    }
-
-    function changeBackgroundColor(color) {
-      document.body.style.backgroundColor = color;
-    }
-
-    function changeParticleColor(color) {
-      particlesConfig.particles.color.value = color;
-      particlesConfig.particles.line_linked.color = color;
-      particlesJS("particles-js", particlesConfig); // reinitialize
-    }
   </script>
 </body>
 </html>
